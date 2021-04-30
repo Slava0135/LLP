@@ -112,13 +112,15 @@ static int validateNode(struct Node *node)
 {
     if (node == NULL) return 0;
     if (node->color == RED) {
-        if (node->left != NULL && node->left->color != BLACK || node->right != NULL && node->right->color != BLACK) {
+        if (node->left != NULL && node->left->color == RED || node->right != NULL && node->right->color == RED) {
             return -1;
         }
     }
-    const int left = validateNode(node->left), right = validateNode(node->right);
+    const int left = validateNode(node->left);
+    const int right = validateNode(node->right);
     if (left == -1 || right == -1 || left != right) return -1;
-    return left;
+    const int add = node->color == BLACK ? 1 : 0;
+    return left + add;
 }
 
 static int maxDepth(struct Node *node)
@@ -132,7 +134,7 @@ static int deleteNode(Tree *tree, struct Node *deleted)
     struct Node *replacement = findReplacement(deleted);
     int bothBlack =
             (replacement == NULL || replacement->color == BLACK) && (deleted->color == BLACK);
-
+    // Удаляемый узел - лист
     if (replacement == NULL) {
         if (deleted == tree->root) {
             tree->root = NULL;
@@ -155,7 +157,7 @@ static int deleteNode(Tree *tree, struct Node *deleted)
         free(deleted);
         return 1;
     }
-
+    // Есть 1 ребенок
     if (deleted->left == NULL || deleted->right == NULL) {
         if (deleted == tree->root) {
             tree->root = replacement;
@@ -179,7 +181,7 @@ static int deleteNode(Tree *tree, struct Node *deleted)
             return 1;
         }
     }
-
+    // Есть два ребенка - меняем значения с узлом (с самым маленьким значением в правом поддереве) и удаляем рекурсивно
     swapValues(deleted, replacement);
     return deleteNode(tree, replacement);
 }
@@ -220,20 +222,20 @@ static void swapValues(struct Node *n1, struct Node *n2)
 static void insertFixup(Tree *tree, struct Node *node)
 {
     struct Node *parent = NULL;
-    struct Node *grand_parent = NULL;
+    struct Node *grandParent = NULL;
     struct Node *uncle = NULL;
     while ((node != tree->root) && (node->color != BLACK) && (node->parent->color == RED)) {
         parent = node->parent;
-        grand_parent = node->parent->parent;
+        grandParent = node->parent->parent;
         // Узел находится в левом поддереве дедушки.
-        if (parent == grand_parent->left) {
-            uncle = grand_parent->right;
+        if (parent == grandParent->left) {
+            uncle = grandParent->right;
             // Дядя узла тоже красный -> нужно только перекрасить
             if (uncle != NULL && uncle->color == RED) {
-                grand_parent->color = RED;
+                grandParent->color = RED;
                 parent->color = BLACK;
                 uncle->color = BLACK;
-                node = grand_parent;
+                node = grandParent;
             } else {
                 // Узел - правый ребенок родителя, нужен левый поворот
                 if (node == parent->right) {
@@ -242,18 +244,18 @@ static void insertFixup(Tree *tree, struct Node *node)
                     parent = node->parent;
                 }
                 // Узел - левый ребенок родителя, нужен правый поворот
-                rotateRight(tree, grand_parent);
-                swapColors(parent, grand_parent);
+                rotateRight(tree, grandParent);
+                swapColors(parent, grandParent);
                 node = parent;
             }
         } else { // Узел находится в правом поддереве дедушки
-            uncle = grand_parent->left;
+            uncle = grandParent->left;
             // Дядя узла тоже красный -> нужно только перекрасить
             if ((uncle != NULL) && uncle->color == RED) {
-                grand_parent->color = RED;
+                grandParent->color = RED;
                 parent->color = BLACK;
                 uncle->color = BLACK;
-                node = grand_parent;
+                node = grandParent;
             } else {
                 // Узел - левый ребенок родителя, нужен правый поворот
                 if (node == parent->left) {
@@ -262,8 +264,8 @@ static void insertFixup(Tree *tree, struct Node *node)
                     parent = node->parent;
                 }
                 // Узел - правый ребенок родителя, нужен левый поворот
-                rotateLeft(tree, grand_parent);
-                swapColors(parent, grand_parent);
+                rotateLeft(tree, grandParent);
+                swapColors(parent, grandParent);
                 node = parent;
             }
         }
@@ -411,7 +413,7 @@ static void removeFixup(Tree *tree, struct Node *node)
             } else {
                 rotateLeft(tree, parent);
             }
-            removeFixup(tree, node);
+            removeFixup(tree, node); // Делаем то же самое, но брат теперь черный
         } else {
             if (sibling->left != NULL && sibling->left->color == RED) {
                 if (onLeft(sibling)) {
@@ -435,7 +437,7 @@ static void removeFixup(Tree *tree, struct Node *node)
                     rotateRight(tree, parent);
                 }
                 parent->color = BLACK;
-            } else {
+            } else { // Оба ребенка брата черные
                 sibling->color = RED;
                 if (parent->color == BLACK) {
                     removeFixup(tree, parent);
