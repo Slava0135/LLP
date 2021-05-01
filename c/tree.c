@@ -23,9 +23,9 @@ struct Node {
 static struct Node *makeNode(T);
 static void freeNode(struct Node *);
 
-static void printOrdered(struct Node *);
 static int maxDepth(struct Node *);
 static int validateNode(struct Node *);
+static void getElement(struct Node *);
 
 static void rotateRight(Tree *tree, struct Node *);
 static void rotateLeft(Tree *tree, struct Node *);
@@ -51,6 +51,7 @@ Tree *makeTree()
 {
     Tree *temp = (Tree *) malloc(sizeof (struct Tree_));
     temp->size = 0;
+    temp->root = NULL;
     return temp;
 }
 
@@ -75,16 +76,10 @@ int removeElement(Tree *tree, T element)
     return deleteNode(tree, deleted);
 }
 
-int isPresent(Tree *tree, T element)
+int contains(Tree *tree, T element)
 {
     if (tree->root == NULL) return 0;
     return findNode(tree->root, element) != NULL;
-}
-
-void printTreeSorted(Tree *tree)
-{
-    printOrdered(tree->root);
-    printf("%c", '\n');
 }
 
 void freeTree(Tree *tree)
@@ -106,6 +101,21 @@ int getDepth(Tree *tree)
 int validate(Tree *tree)
 {
     return validateNode(tree->root) != -1;
+}
+
+static T *pointer;
+void getElements(Tree *tree, T *array)
+{
+    pointer = array;
+    getElement(tree->root);
+}
+
+static void getElement(struct Node *node)
+{
+    if (node == NULL) return;
+    getElement(node->left);
+    *(pointer++) = node->value;
+    getElement(node->right);
 }
 
 static int validateNode(struct Node *node)
@@ -310,14 +320,6 @@ static void rotateRight(Tree *tree, struct Node *node)
     }
     left->right = node;
     node->parent = left;
-}
-
-static void printOrdered(struct Node *node)
-{
-    if (node == NULL) return;
-    printOrdered(node->left);
-    printf("%d ", node->value);
-    printOrdered(node->right);
 }
 
 static struct Node *placeNode(struct Node *node, T element)
