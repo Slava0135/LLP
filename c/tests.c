@@ -17,15 +17,15 @@ int main()
     }
 
     if (getSize(tree) < LIMIT) {
-        printf("NOT ALL ELEMENTS WERE ADDED");
+        printf("NOT ALL ELEMENTS WERE ADDED\n");
         return -1;
     }
     if (getDepth(tree) < log2(LIMIT) || getDepth(tree) > 2 * log2(LIMIT)) {
-        printf("FAILED DEPTH TEST");
+        printf("FAILED DEPTH TEST\n");
         return -1;
     }
     if (!validate(tree)) {
-        printf("TREE IS NOT VALID");
+        printf("TREE IS NOT VALID\n");
         return -1;
     }
 
@@ -33,11 +33,11 @@ int main()
         int elem = rand() % LIMIT;
         removeElement(tree, elem);
         if (contains(tree, elem)) {
-            printf("ELEMENT WAS NOT DELETED");
+            printf("ELEMENT WAS NOT DELETED\n");
             return -1;
         }
         if (!validate(tree)) {
-            printf("TREE IS NOT VALID");
+            printf("TREE IS NOT VALID\n");
             return -1;
         }
     }
@@ -46,27 +46,27 @@ int main()
         insertElement(tree, i);
     }
     if (getSize(tree) > LIMIT) {
-        printf("DUPLICATE NODES");
+        printf("DUPLICATE NODES\n");
         return -1;
     }
     if (getSize(tree) < LIMIT) {
-        printf("NOT ALL ELEMENTS WERE ADDED");
+        printf("NOT ALL ELEMENTS WERE ADDED\n");
         return -1;
     }
     if (getDepth(tree) < log2(LIMIT) || getDepth(tree) > 2 * log2(LIMIT)) {
-        printf("FAILED DEPTH TEST");
+        printf("FAILED DEPTH TEST\n");
         return -1;
     }
 
     getElements(tree, array);
     for (int i = 0; i < LIMIT; i++) {
         if (array[i] != i) {
-            printf("ELEMENTS DISORDER");
+            printf("ELEMENTS DISORDER\n");
             return -1;
         }
     }
 
     freeTree(tree);
-    printf("TESTS PASSED");
+    printf("TESTS PASSED\n");
     return 0;
 }

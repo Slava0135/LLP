@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
                        "    depth               writes a depth of the tree\n"
                        "    valid               checks if the tree is a valid Red-Black tree\n"
                        "Output is printed to stdout.\n"
-                       "Enter $ to finish the program from the terminal.\n"
+                       "Enter $ to finish the program.\n"
                 );
                 return 0;
             } else {
