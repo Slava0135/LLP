@@ -5,6 +5,9 @@
 
 #define maxOf(a, b) a > b ? a : b
 
+#define MAX_PRINT_DEPTH 31
+#define MAX_PRINT_WIDTH 255
+
 typedef enum { BLACK, RED } Color;
 
 struct Tree_ {
@@ -47,6 +50,7 @@ static int onRight(struct Node *node);
 static int deleteNode(Tree *, struct Node *);
 static void removeFixup(Tree *, struct Node *);
 
+static int drawLayer(struct Node *, int, int, int, char out[MAX_PRINT_DEPTH][MAX_PRINT_WIDTH]);
 
 Tree *makeTree()
 {
@@ -102,6 +106,48 @@ int getDepth(Tree *tree)
 int validate(Tree *tree)
 {
     return validateNode(tree->root) != -1;
+}
+
+void drawTree(Tree *tree)
+{
+
+    if (getDepth(tree) >= MAX_PRINT_DEPTH / 2) {
+        printf("TREE IS TOO DEEP TO DRAW\n");
+        return;
+    }
+
+    char out[MAX_PRINT_DEPTH][MAX_PRINT_WIDTH];
+    for (int i = 0; i < MAX_PRINT_DEPTH; i++) {
+        int j;
+        for (j = 0; j < MAX_PRINT_WIDTH - 1; j++) {
+            out[i][j] = ' ';
+        }
+        out[i][j] = '\0';
+    }
+
+    if (drawLayer(tree->root, 0, 0, 0, out) == -1) {
+        printf("TREE IS TOO WIDE TO DRAW\n");
+        return;
+    }
+
+    int depth = 0;
+    for (int i = 0; i < MAX_PRINT_DEPTH; i++) {
+        int last = 0;
+        for (int j = 0; j < MAX_PRINT_WIDTH - 2; j++) {
+            if (out[i][j] != ' ') {
+                last = j;
+            }
+        }
+        if (last == 0) {
+            break;
+        }
+        out[i][last + 1] = '\0';
+        depth++;
+    }
+
+    for (int i = 0; i < depth; i++) {
+        printf("%s\n", out[i]);
+    }
 }
 
 static T *pointer;
@@ -450,4 +496,39 @@ static void removeFixup(Tree *tree, struct Node *node)
             }
         }
     }
+}
+
+static int drawLayer(struct Node *node, int onLeft, int offset, int depth, char out[MAX_PRINT_DEPTH][MAX_PRINT_WIDTH])
+{
+    if (node == NULL) return 0;
+    if (offset >= MAX_PRINT_WIDTH) return -1;
+
+    const int width = 7;
+    char value[width + 1];
+    sprintf(value, "<%04d%c>", node->value, node->color == BLACK ? 'B' : 'R');
+
+    const int left = drawLayer(node->left,1, offset,depth + 1, out);
+    const int right = drawLayer(node->right,0, offset + left + width, depth + 1, out);
+
+    if(right == -1) return -1;
+
+    for (int i = 0; i < width; i++) {
+        out[2 * depth][offset + left + i] = value[i];
+    }
+
+    if (depth > 0) {
+        if (onLeft) {
+            for (int i = 0; i < width + right; i++)
+                out[2 * depth - 1][offset + left + width/2 + i] = '-';
+            out[2 * depth - 1][offset + left + width/2] = '+';
+            out[2 * depth - 1][offset + left + width + right + width/2] = '+';
+        } else {
+            for (int i = 0; i < left + width; i++)
+                out[2 * depth - 1][offset - width/2 + i] = '-';
+            out[2 * depth - 1][offset + left + width/2] = '+';
+            out[2 * depth - 1][offset - width/2 - 1] = '+';
+        }
+    }
+
+    return left + width + right;
 }

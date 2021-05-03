@@ -12,29 +12,19 @@ static void work();
 static void removeSuffix(char *);
 
 static void printTree(Tree *tree);
+static void printHelp();
 
 int main(int argc, char *argv[])
 {
     switch (argc) {
         case 1: {
+            printHelp();
             work();
             return 0;
         }
         case 2: {
             if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
-                printf(""
-                       "Usage: gardener\n"
-                       "Creates a tree and reads following commands from stdin:\n"
-                       "    insert [INT]...     insert an element to the tree\n"
-                       "    remove [INT]...     remove an element from the tree\n"
-                       "    contains [INT]      checks if an element in the tree\n"
-                       "    elements            writes a list of elements\n"
-                       "    size                writes a size of the tree\n"
-                       "    depth               writes a depth of the tree\n"
-                       "    valid               checks if the tree is a valid Red-Black tree\n"
-                       "Output is printed to stdout.\n"
-                       "Enter $ to finish the program.\n"
-                );
+                printHelp();
                 return 0;
             } else {
                 printf("INVALID ARGUMENTS");
@@ -80,6 +70,8 @@ static void work()
             printf("Tree is %d nodes deep\n", getDepth(tree));
         } else if (strcmp(command, "valid") == 0) {
             printf("%s\n", validate(tree) ? "Tree is valid" : "Tree is not valid");
+        } else if (strcmp(command, "draw") == 0) {
+            drawTree(tree);
         } else {
             printf("INVALID COMMAND\n");
         }
@@ -102,4 +94,22 @@ static void printTree(Tree *tree)
     }
     printf("\n");
     free(array);
+}
+
+static void printHelp()
+{
+    printf(""
+           "Usage: gardener\n"
+           "Creates a tree and reads following commands from stdin:\n"
+           "    insert [INT]...     insert an element to the tree\n"
+           "    remove [INT]...     remove an element from the tree\n"
+           "    contains [INT]      checks if an element in the tree\n"
+           "    elements            writes a list of elements\n"
+           "    size                writes a size of the tree\n"
+           "    depth               writes a depth of the tree\n"
+           "    valid               checks if the tree is a valid Red-Black tree\n"
+           "    draw                draws the tree (4 digits max including sign)\n"
+           "Output is printed to stdout.\n"
+           "Enter $ to finish the program.\n\n"
+    );
 }

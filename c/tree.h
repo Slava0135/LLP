@@ -17,6 +17,8 @@ extern int validate(Tree *);
 
 extern void getElements(Tree *, T *);
 
+extern void drawTree(Tree *);
+
 extern void freeTree(Tree *);
 
 #endif //TREE_TREE_H
