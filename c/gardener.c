@@ -72,6 +72,8 @@ static void work()
             printf("%s\n", validate(tree) ? "Tree is valid" : "Tree is not valid");
         } else if (strcmp(command, "draw") == 0) {
             drawTree(tree);
+        } else if (strcmp(command, "help") == 0) {
+            printHelp();
         } else {
             printf("INVALID COMMAND\n");
         }
@@ -109,6 +111,7 @@ static void printHelp()
            "    depth               writes a depth of the tree\n"
            "    valid               checks if the tree is a valid Red-Black tree\n"
            "    draw                draws the tree (4 digits max including sign)\n"
+           "    help                prints this message\n"
            "Output is printed to stdout.\n"
            "Enter $ to finish the program.\n\n"
     );

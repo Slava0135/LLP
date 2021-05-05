@@ -1,5 +1,6 @@
 #include <malloc.h>
 #include <stddef.h>
+#include <stdio.h>
 
 #include "tree.h"
 
@@ -169,7 +170,7 @@ static int validateNode(struct Node *node)
 {
     if (node == NULL) return 0;
     if (node->color == RED) {
-        if (node->left != NULL && node->left->color == RED || node->right != NULL && node->right->color == RED) {
+        if ((node->left != NULL && node->left->color == RED) || (node->right != NULL && node->right->color == RED)) {
             return -1;
         }
     }
